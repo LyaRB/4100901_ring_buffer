@@ -49,6 +49,8 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint8_t data;
+uint8_t data2;
+
 uint8_t ID;
 #define CAPACITY_USART2 10
 uint8_t mem_usart2[CAPACITY_USART2];
@@ -76,8 +78,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){ //librería para la int
 		//HAL_UART_Transmit(&huart2, data, 1, 10); //va a escribir R cada vez que haya una recepción
 		//HAL_UART_Receive_IT(&huart2, data, 3); //espera una dirección
 		//HAL_UART_Transmit(&huart2, &data, 1, 10); //el & indica que es un apuntador (direccion)
-		ring_buffer_write(&rb_usart2, data);
-		HAL_UART_Receive_IT(&huart2, &data, 1);
+		ring_buffer_write(&rb_usart2, data2);
+		HAL_UART_Receive_IT(&huart2, &data2, 1);
 
 	}
 	if(huart -> Instance == USART1){ //USART2 es un apuntador a una dirección, Instance se refiere a la dirección del periferico para USART2
@@ -88,13 +90,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){ //librería para la int
 			HAL_UART_Receive_IT(&huart1, &data, 1);
 
 		}
-
-	if (huart->Instance == USART2) {
-//		  ring_buffer_write(data);
-//		  HAL_UART_Receive_IT(&huart2, &data, 1);
-		  ring_buffer_write(&rb_usart2, data); // enviar argumentos para la función write
-		  HAL_UART_Receive_IT(&huart2, &data, 1); // enable interrupt to continue receiving
-	  }
 }
 /* USER CODE END 0 */
 
@@ -135,17 +130,18 @@ int main(void)
   ring_buffer_init(&rb_usart2, mem_usart2, CAPACITY_USART2);
   ring_buffer_init(&rb_usart2, mem_usart1, CAPACITY_USART2);
 
-  ssd1306_Init();
-  ssd1306_Fill(Black);
-  ssd1306_SetCursor(10,20);
-  ssd1306_WriteString("Hi?", Font_6x8, White);
-  ssd1306_UpdateScreen();
+//  ssd1306_Init();
+//  ssd1306_Fill(Black);
+//  ssd1306_SetCursor(10,20);
+//  ssd1306_WriteString("Hi?", Font_6x8, White);
+//  ssd1306_UpdateScreen();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   HAL_UART_Receive_IT(&huart2, &data, 1);
  HAL_UART_Receive_IT(&huart1, &data, 1);
+
   while (1)
   {
     /* USER CODE END WHILE */
@@ -158,20 +154,20 @@ int main(void)
 		  		 // if(ring_buffer_is_full()){ //si está lleno se comienzan a leer los datos
 		  		  if (ring_buffer_is_full(&rb_usart2) != 0) {
 		  			  uint8_t byte = 0;
-		  			  uint8_t data[11];
+		  			  uint8_t data2[11];
 
 		  			  for (uint8_t i = 0; i <= 11; i++){//recorre cada espacio para leerlo
 		  				  ring_buffer_read(&rb_usart2, &byte); //cambia el limite de i
 		  				 HAL_UART_Transmit(&huart2, &byte, 1, 10);
-		  				  data[i] = byte;
+		  				  data2[i] = byte;
 		  			}
-		  			  if(right_ID(&data)){
-							HAL_UART_Transmit(&huart2, "Paulina RB\r\n", 12, 10);
+		  			  if(right_ID(data2)){
+							HAL_UART_Transmit(&huart1, "Paulina RB\r\n", 12, 10);
 							ssd1306_WriteString("Paulina RB", Font_6x8, White);
 							ssd1306_UpdateScreen();
 		  			  }else {
 
-						HAL_UART_Transmit(&huart2, "Incorrecto\r\n", 12, 10);
+						HAL_UART_Transmit(&huart1, "Incorrecto\r\n", 12, 10);
 
 					  }
 //					 HAL_UART_Transmit(&huart2, &size, 1, 10);
