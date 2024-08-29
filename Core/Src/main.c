@@ -76,7 +76,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){ //librería para la int
 		//HAL_UART_Transmit(&huart2, data, 1, 10); //va a escribir R cada vez que haya una recepción
 		//HAL_UART_Receive_IT(&huart2, data, 3); //espera una dirección
 		//HAL_UART_Transmit(&huart2, &data, 1, 10); //el & indica que es un apuntador (direccion)
-	ring_buffer_write(data);
+		ring_buffer_write(&rb_usart2, data);
 		HAL_UART_Receive_IT(&huart2, &data, 1);
 
 	}
@@ -133,6 +133,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   //inicializar el buffer con el puerto de comunicación a usar
   ring_buffer_init(&rb_usart2, mem_usart2, CAPACITY_USART2);
+  ring_buffer_init(&rb_usart2, mem_usart1, CAPACITY_USART2);
 
   ssd1306_Init();
   ssd1306_Fill(Black);
@@ -150,8 +151,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  if(ring_buffer_size() != 0){
-		  		  uint8_t size = ring_buffer_size();
+	  if(ring_buffer_size(&rb_usart2) != 0){
+		  		  uint8_t size = ring_buffer_size(&rb_usart2);
 		  		  size = size+0x30; //para que muestre el número en decimal
 
 		  		 // if(ring_buffer_is_full()){ //si está lleno se comienzan a leer los datos

@@ -25,7 +25,7 @@ typedef struct ring_buffer_{
 //uint8_t ring_buffer_read(uint8_t *byte);
 
 void ring_buffer_write(ring_buffer_t *rb, uint8_t data); //funcion con los nuevos argumentos
-uint8_t ring_buffer_read(uint8_t *byte);
+uint8_t ring_buffer_read(ring_buffer_t *rb,uint8_t *byte);
 
 //uint8_t ring_buffer_reset();
 //uint8_t ring_buffer_empty(void);
@@ -33,7 +33,7 @@ uint8_t ring_buffer_read(uint8_t *byte);
 //uint8_t ring_buffer_is_full(void);
 //uint8_t right_ID(uint8_t *data);
 
-void ring_buffer_init(ring_buffer_t *rb, uint8_t mem_add, uint8_t capacity);
+void ring_buffer_init(ring_buffer_t *rb, uint8_t *mem, uint8_t capacity);
 void ring_buffer_reset(ring_buffer_t *rb);
 uint8_t ring_buffer_size(ring_buffer_t *rb);
 uint8_t ring_buffer_is_full(ring_buffer_t *rb);

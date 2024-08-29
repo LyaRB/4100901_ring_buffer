@@ -12,14 +12,15 @@
 //uint8_t head_ptr;
 //uint8_t tail_ptr;
 //uint8_t is_full;
-//uint8_t numberID[] = {'1','0','0','2','6','0','9','4','9','3'};
+uint8_t numberID[] = {'1','0','0','2','6','0','9','4','9','3'};
 
-void ring_buffer_init(ring_buffer_t *rb, uint8_t *mem, uint8_t cap){ //buffer,memoria, capacidad
 
-	rb->buffer = mem_add; //la dirección de la memoria
-	rb->capacity = cap;
+void ring_buffer_init(ring_buffer_t *rb, uint8_t *mem, uint8_t capacity){ //buffer,memoria, capacidad
 
-	ring_buffer_reset();
+	rb->buffer = mem; //la dirección de la memoria
+	rb->capacity = capacity;
+
+	ring_buffer_reset(rb);
 
 }
 
@@ -57,8 +58,8 @@ void ring_buffer_write(ring_buffer_t *rb, uint8_t data)
 	if (rb->is_full != 0) { // si se pierden datos viejos
 		rb->tail = rb->tail  + 1;
 	}
-	if (rb->tail >= capacity) { // si la cola llega al final de la memoria
-	  tail_ptr = 0;
+	if (rb->tail >= rb->capacity) { // si la cola llega al final de la memoria
+		rb->tail = 0;
 	}
 	if (rb->head == rb->tail) { // si la cabeza alcanza la cola
 		rb->is_full = 1;
@@ -85,7 +86,7 @@ uint8_t ring_buffer_read(ring_buffer_t *rb, uint8_t *data){
 
 	if((rb->is_full != 0) || (rb->head != rb->tail)){
 			  *data = rb->buffer[rb->tail]; //Esto representa la lectura de un byte de datos del buffer.
-			  tail_ptr = tail_ptr + 1;
+			  rb->tail = rb->tail + 1;
 			  if(rb->tail>= rb->capacity){
 				  rb->tail = 0;
 
@@ -119,7 +120,7 @@ uint8_t ring_buffer_read(ring_buffer_t *rb, uint8_t *data){
 uint8_t ring_buffer_size(ring_buffer_t *rb){
 	uint8_t size = 0;
 	if(rb->head > rb->tail){
-		size = head_ptr - tail_ptr;
+		size =rb->head - rb->tail;
 	}
 	else if(rb->head < rb->tail){
 			size = (rb->capacity - rb->tail) + (rb->head);
@@ -144,14 +145,12 @@ uint8_t ring_buffer_size(ring_buffer_t *rb){
 //    return 0;
 //}
 
-uint8_t ring_buffer_reset(ring_buffer_t *rb) {
+void ring_buffer_reset(ring_buffer_t *rb) {
     if (rb->is_full) {  // Verifica si el buffer está lleno
     	rb->head = 0;  // Reinicia el puntero de escritura
     	rb->tail = 0;  // Reinicia el puntero de lectura
-    	rb->is_full = 0;
-        return 1;// Resetea la bandera de buffer lleno
+    	rb->is_full = 0; // Resetea la bandera de buffer lleno
     }
-    return 0;
 }
 
 //uint8_t ring_buffer_is_full(void){
